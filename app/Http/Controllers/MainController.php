@@ -26,14 +26,14 @@ class MainController extends Controller
         }else{
             // check password
             if ($request->password == $userinfo->password){
-                return $request->session()->put('LoggedUser', $userinfo->id);
-                return redirect('admin/dashboard');
+                $request->session()->put('LoggedUser', $userinfo->id);
+                return redirect('/admin/dashboard');
             }else{
                 return back()->with('fail','Wrong password');
             }
         }
     }
-    
+ 
 
 
     function dashboard(){
@@ -44,7 +44,7 @@ class MainController extends Controller
     function logout(){
         if(session()->has('LoggedUser')){
             session()->pull('LoggedUser');
-            return redirect('auth/login');
+            return redirect('/auth/login');
         }
      }
 
