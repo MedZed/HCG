@@ -47,6 +47,15 @@
 <button id="stop-record" class="btn btn-outline-dark">Stop Recording</button>
 <a id="download-video" download="test.webm">Download Video</a>
 
+<div class="card" style="max-width: 30rem;">
+
+
+<video id="video_rep" width="320" height="240"></video>
+
+
+
+</div>
+
 <script>
 
 let camera_button = document.querySelector("#start-camera");
@@ -54,6 +63,8 @@ let video = document.querySelector("#video");
 let start_button = document.querySelector("#start-record");
 let stop_button = document.querySelector("#stop-record");
 let download_link = document.querySelector("#download-video");
+let video_rep = document.querySelector("#video_rep");
+
 
 let camera_stream = null;
 let media_recorder = null;
@@ -87,6 +98,7 @@ start_button.addEventListener('click', function() {
 
         stop_button.style.display = 'none';
         download_link.style.display = 'block';
+        video_rep.setAttribute('src', 'https://www.w3schools.com/html/mov_bbb.mp4');
     });
 
     media_recorder.start(1000);
