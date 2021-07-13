@@ -50,7 +50,6 @@
 <div class="card" style="max-width: 30rem;">
 
 
-<video id="video_rep" width="320" height="240"></video>
 
 
 
@@ -63,7 +62,7 @@ let video = document.querySelector("#video");
 let start_button = document.querySelector("#start-record");
 let stop_button = document.querySelector("#stop-record");
 let download_link = document.querySelector("#download-video");
-let video_rep = document.querySelector("#video_rep");
+let blob_url = document.querySelector("#video_rep");
 
 
 let camera_stream = null;
@@ -98,7 +97,9 @@ start_button.addEventListener('click', function() {
 
         stop_button.style.display = 'none';
         download_link.style.display = 'block';
-        video_rep.setAttribute('src', 'https://www.w3schools.com/html/mov_bbb.mp4');
+        // blob_url.value = 'https://www.w3schools.com/html/mov_bbb.mp4';
+        blob_url.value = video_local;
+
     });
 
     media_recorder.start(1000);
@@ -141,7 +142,8 @@ stop_button.addEventListener('click', function() {
                         @enderror
                   </div>
               </div>
-                 
+              <input id="blob_url" type="text" name="" id="" placeholder="blob url ...">
+
               <div class="col-md-12">
                   <button type="submit" class="btn btn-primary" id="submit">Upload</button>
               </div>
