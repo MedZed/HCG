@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\MainController;
+use Illuminate\Auth\Events\Login;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,3 +18,10 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/auth/login', [MainController::class, 'Login'])->name('auth.login');
+Route::post('/auth/check', [MainController::class, 'Check'])->name('auth.check');
+Route::get('/auth/logout', [MainController::class, 'logout'])->name('auth.logout');
+
+Route::get('/admin/dashboard', [MainController::class, 'dashboard']);
+
