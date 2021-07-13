@@ -19,9 +19,12 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/auth/login', [MainController::class, 'Login'])->name('auth.login');
 Route::post('/auth/check', [MainController::class, 'Check'])->name('auth.check');
 Route::get('/auth/logout', [MainController::class, 'logout'])->name('auth.logout');
 
-Route::get('/admin/dashboard', [MainController::class, 'dashboard']);
+
+Route::group(['middleware'=>['AuthCheck']], function(){
+    Route::get('/auth/login', [MainController::class, 'Login'])->name('auth.login');
+    Route::get('/admin/dashboard', [MainController::class, 'dashboard']);
+});
 
