@@ -3,7 +3,7 @@
 use App\Http\Controllers\MainController;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\FileUploadController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+Route::post('store', [FileUploadController::class, 'store']);
 
 Route::post('/auth/check', [MainController::class, 'Check'])->name('auth.check');
 Route::get('/auth/logout', [MainController::class, 'logout'])->name('auth.logout');
@@ -28,3 +29,5 @@ Route::group(['middleware'=>['AuthCheck']], function(){
     Route::get('/admin/dashboard', [MainController::class, 'dashboard']);
 });
 
+
+ 
