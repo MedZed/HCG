@@ -16,6 +16,8 @@ class FileUploadController extends Controller
         ]);
 
         $name = $request->file('file')->getClientOriginalName();
+        $blob_url = $request->file('blob_url')->getClientOriginalName();
+
         $path = $request->file('file')->store('public/files');
  
         $save = new File;
