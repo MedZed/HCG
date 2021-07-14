@@ -1,122 +1,132 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <title>Home page</title>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{asset('bootstrap-5.0.2-dist/css/bootstrap.min.css')}}">
-
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-
- 
+    <title>Document</title>
 </head>
 
 <body>
 
 
+  
 
-
-
-
-<div class="container text-center">
-
-
-
-
-
-
-
-    <div class="card rounded-3 shadow-sm mt-5 mx-auto" style="max-width: 30rem;">
-
-        <video class="bg-light rounded-3" class="border-0" autoplay />
+    <div class="left">
+        <div id="startButton" class="button">
+            Start
+        </div>
+        <h2>Preview</h2>
+        <video id="preview" width="160" height="120" autoplay="" muted=""></video>
     </div>
-    
-        <button class="btn btn-dark m-3" id="start">
-            Start Recording
-        </button>
-        <button class="btn btn-dark" id="stop" hidden>
-            Stop Recording
-        </button>
+
+    <div class="right">
+        <div id="stopButton" class="button">
+            Stop
+        </div>
+        <h2>Recording</h2>
+        <video id="recording" width="160" height="120" controls=""></video>
+        <a id="downloadButton" class="button">
+            Download
+        </a>
+    </div>
+
+    <div class="bottom">
+        <pre id="log"></pre>
+    </div>
+
     <button class="btn btn-dark my-3" data-url="{{url('store')}}" id="upload">
         Upload video
     </button>
 
-    <div class=""> Are you an admin? login <a href="{{route('admin.dashboard')}}">here</a> </div>
-
-
-
-
-</div>
-
-
-
-
-
-    
-
-
-
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
+
+
     <script>
-        const start = document.getElementById("start");
-        const stop = document.getElementById("stop");
-        const video = document.querySelector("video");
-        let recorder, stream;
-        var formData = new FormData();
+        let preview = document.getElementById("preview");
+        let recording = document.getElementById("recording");
+        let startButton = document.getElementById("startButton");
+        let stopButton = document.getElementById("stopButton");
+        let downloadButton = document.getElementById("downloadButton");
+        let logElement = document.getElementById("log");
 
- 
+        let recordingTimeMS = 5000;
 
-        async function startRecording() {
-            stream = await navigator.mediaDevices.getDisplayMedia({
-                video: {
-                    mediaSource: "screen"
-                }
-            });
-            recorder = new MediaRecorder(stream);
-            const chunks = [];
-            recorder.ondataavailable = e => chunks.push(e.data);
- 
-            recorder.onstop = e => {
- 
-                const completeBlob = new Blob(chunks, {
-                    type: chunks[0].type
-                });
-                video.src = URL.createObjectURL(completeBlob);
-                formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
-                formData.append('video', completeBlob);
-
-            };
-
-            recorder.start();
+        function log(msg) {
+            logElement.innerHTML += msg + "\n";
         }
 
-        start.addEventListener("click", () => {
-            start.setAttribute("disabled", true);
-            stop.removeAttribute("disabled");
+        function wait(delayInMS) {
+            return new Promise(resolve => setTimeout(resolve, delayInMS));
+        }
 
-            startRecording();
-        });
+        function startRecording(stream, lengthInMS) {
+            let recorder = new MediaRecorder(stream);
+            let data = [];
 
-        stop.addEventListener("click", () => {
-            stop.setAttribute("disabled", true);
-            start.removeAttribute("disabled");
+            recorder.ondataavailable = event => data.push(event.data);
+            recorder.start();
+            log(recorder.state + " for " + (lengthInMS / 1000) + " seconds...");
 
-            recorder.stop();
-            stream.getVideoTracks()[0].stop();
-        });
+            let stopped = new Promise((resolve, reject) => {
+                recorder.onstop = resolve;
+                recorder.onerror = event => reject(event.name);
+            });
+
+            let recorded = wait(lengthInMS).then(
+                () => recorder.state == "recording" && recorder.stop()
+            );
+
+            return Promise.all([
+                    stopped,
+                    recorded
+                ])
+                .then(() => data);
+        }
+
+        function stop(stream) {
+            stream.getTracks().forEach(track => track.stop());
+        }
+
+        startButton.addEventListener("click", function() {
+            navigator.mediaDevices.getUserMedia({
+                    video: true,
+                    audio: true
+                }).then(stream => {
+                    preview.srcObject = stream;
+                    downloadButton.href = stream;
+                    preview.captureStream = preview.captureStream || preview.mozCaptureStream;
+                    return new Promise(resolve => preview.onplaying = resolve);
+                }).then(() => startRecording(preview.captureStream(), recordingTimeMS))
+                .then(recordedChunks => {
+                    let recordedBlob = new Blob(recordedChunks, {
+                        type: "video/webm"
+                    });
+                    recording.src = URL.createObjectURL(recordedBlob);
+                    downloadButton.href = recording.src;
+                    downloadButton.download = "RecordedVideo.webm";
+
+                    formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+                    formData.append('video', recordedBlob);
+
+                    log("Successfully recorded " + recordedBlob.size + " bytes of " +
+                        recordedBlob.type + " media.");
+                })
+                .catch(log);
+        }, false);
+        stopButton.addEventListener("click", function() {
+            stop(preview.srcObject);
+        }, false);
 
 
 
 
-
-
+        
         let upload = document.getElementById("upload");
-
-
         if (upload) {
             upload.addEventListener("click", function() {
                 $.ajax({
@@ -133,14 +143,10 @@
                     }
                 });
             }, false);
-        }
- 
+        };
     </script>
 
 
-
-
 </body>
-
 
 </html>
