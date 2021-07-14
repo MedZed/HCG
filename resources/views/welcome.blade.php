@@ -53,6 +53,7 @@
         let stopButton = document.getElementById("stopButton");
         let downloadButton = document.getElementById("downloadButton");
         let logElement = document.getElementById("log");
+        var formData = new FormData();
 
         let recordingTimeMS = 5000;
 
