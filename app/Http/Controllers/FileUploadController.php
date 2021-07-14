@@ -20,9 +20,9 @@ class FileUploadController extends Controller
             $save->name = "Screen record";
             $save->path = $file;
             if($save->save()){
-            return back()->with('success','File Has been uploaded successfully');
+            return redirect('/')->with('success','File Has been uploaded successfully');
             }else{
-                return back()->with('fail','There was somthing wrong');
+                return redirect('/')->with('fail','There was somthing wrong');
             }
 
          }
@@ -39,7 +39,7 @@ class FileUploadController extends Controller
       if($file->delete()){
         return redirect('/admin/dashboard')->with('success','Record was deleted successfully!');
     }else{
-            return back()->with('fail','There was somthing wrong!');
+            return redirect('/admin/dashboard')->with('fail','There was somthing wrong!');
         }
     }
 
