@@ -144,8 +144,7 @@
                     recording.src = URL.createObjectURL(recordedBlob);
 
 
-                    formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute(
-                        'content'));
+                    formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
                     formData.append('video', recordedBlob);
 
 

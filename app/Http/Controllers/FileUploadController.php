@@ -20,9 +20,9 @@ class FileUploadController extends Controller
             $save->name = "Screen record";
             $save->path = $file;
             if($save->save()){
-            return redirect('/')->with('success','File Has been uploaded successfully');
+            return back()->with('success','File Has been uploaded successfully');
             }else{
-                return redirect('/')->with('fail','There was somthing wrong');
+                return back()->with('fail','There was somthing wrong');
             }
 
          }
