@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\File;
 use App\Models\Admin;
+
 use Illuminate\Http\Request;
 
 class MainController extends Controller
@@ -37,8 +39,10 @@ class MainController extends Controller
 
 
     function dashboard(){
-       $data=['LoggedUserInfo'=>Admin::where('id','=',session('LoggedUser'))->first()];
-       return view('admin.dashboard', $data);
+    //    $data=['LoggedUserInfo'=>Admin::where('id','=',session('LoggedUser'))->first()];
+       $files=File::orderBy('created_at', 'DESC')->get()->all();
+
+       return view('admin.dashboard', compact('files'));
     }
 
     function logout(){

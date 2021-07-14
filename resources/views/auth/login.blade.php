@@ -15,8 +15,8 @@
 
 <div class="row mt-5 mx-auto" style="max-width: 22rem;">
 
-<div class="col-md-4 col-md-offset-4"></div>
-<h4 class="text-center">Login | Admin Auth</h4> <hr>
+<div class="col-md-4 col-md-offset-4 mt-5 pt-5"></div>
+<h4 class="text-center">Sign in</h4>  
 
 <form action="{{ route('auth.check') }}" method="post">
 @csrf
@@ -34,7 +34,7 @@
     <input type="password" name="password" class="form-control mb-2" id="" placeholder="Password">
     <span class="text-danger ">@error('password'){{ $message }} <br> @enderror</span>
 
-    <button type="submit" class="btn btn-primary w-100 my-2">Sign in</button>
+    <button type="submit" class="btn btn-dark w-100 my-2">Sign in</button>
 </div>
 
 </form>

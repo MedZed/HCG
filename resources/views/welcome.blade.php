@@ -1,155 +1,147 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-  <title>Home page</title>
- 
-  <meta name="csrf-token" content="{{ csrf_token() }}">
- 
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <style type="text/css">
+    <title>Home page</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{asset('bootstrap-5.0.2-dist/css/bootstrap.min.css')}}">
+    <script crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
- 
 
-#start-camera {
-    margin-top: 50px;
-}
-
-#video {
-    display: none;
-    margin: 50px auto 0 auto;
-}
-
-#start-record, #stop-record, #download-video {
-    display: none;
-}
-
-#download-video {
-    text-align: center;
-    margin: 20px 0 0 0;
-}
-
-</style>
  
 </head>
+
 <body>
 
 
 
-<div class="container py-5">
+
+
+
+<div class="container text-center">
 
 
 
 
- 
-<button id="start-camera" class="btn btn-outline-dark">Start Camera</button>
-<video id="video" width="320" height="240" autoplay=""></video>
-<button id="start-record" class="btn btn-outline-dark">Start Recording</button>
-<button id="stop-record" class="btn btn-outline-dark">Stop Recording</button>
-<a id="download-video" download="test.webm">Download Video</a>
 
-<div class="card" style="max-width: 30rem;">
 
+
+    <div class="card rounded-3 shadow-sm mt-5 mx-auto" style="max-width: 30rem;">
+
+        <video class="bg-light rounded-3" class="border-0" autoplay />
+    </div>
+    
+        <button class="btn btn-dark m-3" id="start">
+            Start Recording
+        </button>
+        <button class="btn btn-dark" id="stop" hidden>
+            Stop Recording
+        </button>
+    <button class="btn btn-dark my-3" data-url="{{url('store')}}" id="upload">
+        Upload video
+    </button>
+
+    <div class=""> Are you an admin? login <a href="{{route('admin.dashboard')}}">here</a> </div>
 
 
 
 
 </div>
 
-<script>
-
-let camera_button = document.querySelector("#start-camera");
-let video = document.querySelector("#video");
-let start_button = document.querySelector("#start-record");
-let stop_button = document.querySelector("#stop-record");
-let download_link = document.querySelector("#download-video");
-let blob_url = document.querySelector("#video_rep");
 
 
-let camera_stream = null;
-let media_recorder = null;
-let blobs_recorded = [];
-
-camera_button.addEventListener('click', async function() {
-   	try {
-    	camera_stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-    }
-    catch(error) {
-    	alert(error.message);
-    	return;
-    }
-
-    video.srcObject = camera_stream;
-    camera_button.style.display = 'none';
-    video.style.display = 'block';
-    start_button.style.display = 'block';
-});
-
-start_button.addEventListener('click', function() {
-    media_recorder = new MediaRecorder(camera_stream, { mimeType: 'video/webm' });
-
-    media_recorder.addEventListener('dataavailable', function(e) {
-    	blobs_recorded.push(e.data);
-    });
-
-    media_recorder.addEventListener('stop', function() {
-    	let video_local = URL.createObjectURL(new Blob(blobs_recorded, { type: 'video/webm' }));
-    	download_link.href = video_local;
-
-        stop_button.style.display = 'none';
-        download_link.style.display = 'block';
-        // blob_url.value = 'https://www.w3schools.com/html/mov_bbb.mp4';
-        blob_url.value = video_local;
-
-    });
-
-    media_recorder.start(1000);
-
-    start_button.style.display = 'none';
-    stop_button.style.display = 'block';
-});
-
-stop_button.addEventListener('click', function() {
-	media_recorder.stop(); 
-});
-
-</script>
 
 
-</div>
+    
+
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <script>
+        const start = document.getElementById("start");
+        const stop = document.getElementById("stop");
+        const video = document.querySelector("video");
+        let recorder, stream;
+        var formData = new FormData();
 
  
 
+        async function startRecording() {
+            stream = await navigator.mediaDevices.getDisplayMedia({
+                video: {
+                    mediaSource: "screen"
+                }
+            });
+            recorder = new MediaRecorder(stream);
+            const chunks = [];
+            recorder.ondataavailable = e => chunks.push(e.data);
  
-<div class="container mt-4">
+            recorder.onstop = e => {
  
-  
-      <form method="POST" enctype="multipart/form-data" id="upload-file" action="{{ url('store') }}" >
-      @csrf   
-          <div class="row">
- 
-              <div class="col-md-12">
+                const completeBlob = new Blob(chunks, {
+                    type: chunks[0].type
+                });
+                video.src = URL.createObjectURL(completeBlob);
+                formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+                formData.append('video', completeBlob);
 
-                @if(Session::get('success'))
-                <div class="alert alert-success">
-                    {{ Session::get('success') }}
-                </div>
-                @endif
+            };
 
-                  <div class="form-group">
-                      <input type="file" name="file" placeholder="Choose file" id="file">
-                        @error('file')
-                        <div class="alert alert-danger mt-1 mb-1">{{ $message }}</div>
-                        @enderror
-                  </div>
-              </div>
-              <input id="blob_url" type="text" name="" id="" placeholder="blob url ...">
+            recorder.start();
+        }
 
-              <div class="col-md-12">
-                  <button type="submit" class="btn btn-primary" id="submit">Upload</button>
-              </div>
-          </div>     
-      </form>
-</div>
+        start.addEventListener("click", () => {
+            start.setAttribute("disabled", true);
+            stop.removeAttribute("disabled");
+
+            startRecording();
+        });
+
+        stop.addEventListener("click", () => {
+            stop.setAttribute("disabled", true);
+            start.removeAttribute("disabled");
+
+            recorder.stop();
+            stream.getVideoTracks()[0].stop();
+        });
+
+
+
+
+
+
+        let upload = document.getElementById("upload");
+
+
+        if (upload) {
+            upload.addEventListener("click", function() {
+                $.ajax({
+                    url: this.getAttribute('data-url'),
+                    method: 'POST',
+                    data: formData,
+                    cache: false,
+                    processData: false,
+                    contentType: false,
+                    success: function(res) {
+                        if (res.success) {
+                            location.reload();
+                        }
+                    }
+                });
+            }, false);
+        }
  
-</div>  
+    </script>
+
+
+
+
 </body>
+
+
+</html>

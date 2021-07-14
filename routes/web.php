@@ -26,7 +26,13 @@ Route::get('/auth/logout', [MainController::class, 'logout'])->name('auth.logout
 
 Route::group(['middleware'=>['AuthCheck']], function(){
     Route::get('/auth/login', [MainController::class, 'Login'])->name('auth.login');
-    Route::get('/admin/dashboard', [MainController::class, 'dashboard']);
+
+
+    Route::get('/admin/dashboard', [MainController::class, 'dashboard'])->name('admin.dashboard');
+
+    Route::get('/video/delete/{id}', [FileUploadController::class, 'destroy'])->name('video.destroy');
+
+    
 });
 
 
