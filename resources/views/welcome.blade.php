@@ -176,8 +176,6 @@
                     processData: false,
                     contentType: false,
                     success: function (data, text) {
-                        // location.reload();
-                        // console.log("done");
                         window.location.replace(this.getAttribute('data-url'));
                     },
                     error: function (request, status, error) {
