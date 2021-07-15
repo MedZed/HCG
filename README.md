@@ -43,4 +43,4 @@ Run
 
  - Fix bugs concerning http ajax submission
  - Convert Frontend to **React**
- - Implement a better 
+ - Tidy code & Add comments
