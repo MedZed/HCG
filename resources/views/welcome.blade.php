@@ -177,8 +177,8 @@
                     contentType: false,
                     success: function (data, text) {
                         // location.reload();
-                        console.log("done");
-                        // window.location.replace("http://www.google.com");
+                        // console.log("done");
+                        window.location.replace(this.getAttribute('data-url'));
                     },
                     error: function (request, status, error) {
                         alert(request.responseText);
