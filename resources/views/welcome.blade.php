@@ -72,6 +72,7 @@
              <button  class="btn btn-outline-dark my-3 disabled" data-url="{{ url('store') }}" id="upload">
                 Upload video <i class="bi bi-cloud-arrow-up-fill"></i>
             </button>
+            <p>Are you an admin? sign in <a href="{{ url('admin/dashboard') }}">here</a></p>
         </div>
     </div>
 
