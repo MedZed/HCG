@@ -9,11 +9,13 @@ use Illuminate\Support\Facades\Storage;
 
 class FileUploadController extends Controller
 {
+
  
 
     public function store(Request $request)
     {
         if ($request->hasFile('video')) {
+            date_default_timezone_set("Asia/Qatar");
             $path = $request->file('video')->store('public/videos');
             $file = basename($path);
             $save = new File;
@@ -35,7 +37,6 @@ class FileUploadController extends Controller
       $path = 'videos/';
       $store_path = $path . $file->path;
       Storage::disk('public')->delete($store_path);
-
       if($file->delete()){
         return redirect('/admin/dashboard')->with('success','Record was deleted successfully!');
     }else{
