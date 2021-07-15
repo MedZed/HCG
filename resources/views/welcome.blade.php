@@ -176,7 +176,9 @@
                     processData: false,
                     contentType: false,
                     success: function (data, text) {
-                        location.reload();
+                        // location.reload();
+                        console.log("done");
+                        // window.location.replace("http://www.google.com");
                     },
                     error: function (request, status, error) {
                         alert(request.responseText);
