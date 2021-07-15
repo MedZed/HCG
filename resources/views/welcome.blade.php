@@ -69,7 +69,7 @@
  
 
 
-             <button  class="btn btn-outline-dark my-3" data-url="{{ url('store') }}" id="upload">
+             <button  class="btn btn-outline-dark my-3 disabled" data-url="{{ url('store') }}" id="upload">
                 Upload video <i class="bi bi-cloud-arrow-up-fill"></i>
             </button>
         </div>
@@ -158,6 +158,8 @@
             card_footage.classList.add("d-block");
             card_footage.classList.remove("d-none");
             card_preview.classList.add("d-none");
+            upload.classList.remove("disabled");
+ 
             stop(preview.srcObject);
         }, false);
 
@@ -176,7 +178,10 @@
                     processData: false,
                     contentType: false,
                     success: function (data, text) {
-                        window.location.replace(this.getAttribute('data-url'));
+                        upload.classList.add("disabled");
+                        location.reload();
+                        // console.log("done");
+                        // window.location.replace(this.getAttribute('data-url'));
                     },
                     error: function (request, status, error) {
                         alert(request.responseText);
