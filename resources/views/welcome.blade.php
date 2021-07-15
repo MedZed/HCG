@@ -63,7 +63,7 @@
 
             <div class="btn-group " role="group" aria-label="Basic example">
                 <button id="startButton"  type="button" class="btn btn-outline-dark">Start </button>
-                <button id="stopButton" type="button" class="btn btn-outline-dark">Stop</button>
+                <button id="stopButton" type="button" class="btn btn-outline-dark disabled">Stop</button>
               </div>
 
  
@@ -126,6 +126,8 @@
 
             card_preview.classList.add("d-block");
             card_preview.classList.remove("d-none");
+            stopButton.classList.remove("disabled");
+            startButton.classList.add("disabled");
             card_footage.classList.add("d-none");
             card_footage.classList.remove("d-block");
 
@@ -142,13 +144,14 @@
                         type: "video/webm"
                     });
                     recording.src = URL.createObjectURL(recordedBlob);
+                     formData.append('video', recordedBlob);
+                }).catch(log) 
 
 
-                    formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
-                    formData.append('video', recordedBlob);
-
-
-                })
+            function log(msg) {
+                    alert(msg);
+                    return;
+            }
 
         }, false);
         stopButton.addEventListener("click", function() {
@@ -159,27 +162,29 @@
         }, false);
 
 
-
-
-
         let upload = document.getElementById("upload");
         if (upload) {
             upload.addEventListener("click", function() {
                 $.ajax({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
                     url: this.getAttribute('data-url'),
                     method: 'POST',
                     data: formData,
                     cache: false,
                     processData: false,
                     contentType: false,
-                    success: function(res) {
-                        if (res.success) {
-                            location.reload();
-                        }
+                    success: function (data, text) {
+                        location.reload();
+                    },
+                    error: function (request, status, error) {
+                        alert(request.responseText);
                     }
-                });
+                    });
             }, false);
         };
+
     </script>
 
 
